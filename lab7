@@ -1,0 +1,17 @@
+create index idx_departure on flights (actual_departure);
+
+create unique index id1 on flights(flight_no, scheduled_departure, scheduled_arrival);
+
+create index idx_airports on flights(departure_airport_id, arrival_airport_id);
+
+explain select * from flights where departure_airport_id = 3 and arrival_airport_id = 5;
+
+create index index_passengers on passengers(passport_number);
+
+explain select * from passengers where country_of_citizenship = 'Philippines' and extract(year from age(date_of_birth)) = 40;
+
+select * from pg_indexes where tablename = 'passengers';
+drop index if exists idx_departure;
+drop index if exists id1;
+drop index if exists idx_airports;
+drop index if exists index_passengers;
