@@ -1,0 +1,52 @@
+SELECT flights.flight_id,flight_no,airline_name
+FROM flights
+JOIN airline ON flights.airline_id = airline.airline_id
+WHERE airline.airline_name = 'IPC';
+
+
+
+SELECT flight_no,airport.airport_name AS departure_airport
+FROM flights
+JOIN airport ON flights.departure_airport_id = airport.airport_id;
+
+SELECT scheduled_departure,flight_no,airline_name
+FROM airline
+JOIN flights ON airline.airline_id = flights.airline_id
+WHERE to_char(flights.scheduled_departure,'YYYY-MM-DD') not like '___-11-%' order by scheduled_departure desc ;
+
+
+select booking.passenger_id,flight_no from passengers
+join booking on passengers.passenger_id = booking.passenger_id
+join booking_flight on booking.booking_id = booking_flight.booking_id
+join flights on booking_flight.flight_id = flights.flight_id
+where flight_no = 'US-OR'
+
+
+select flights.flight_id,AVG(price),SUM(price),MAX(price),MIN(price) from booking
+join booking_flight on booking.booking_id = booking_flight.booking_id
+join flights on booking_flight.flight_id = flights.flight_id
+group by flights.flight_id order by flight_id;
+
+select country as arriving_country,flight_id,airline_country,airline_name from flights
+join airport on flights.arrival_airport_id = airport.airport_id
+join airline on flights.airline_id = airline.airline_id;
+
+
+select booking.passenger_id,2024-extract(year from date_of_birth) as age,country as arrival_destination from passengers
+join booking on passengers.passenger_id = booking.passenger_id
+join booking_flight on booking.booking_id = booking_flight.booking_id
+join flights on booking_flight.flight_id = flights.flight_id
+join airport on flights.arrival_airport_id = airport.airport_id
+where 2024-extract(year from date_of_birth) <= 21;
+
+select first_name ||  ' ' || last_name as fullname,passport_number,actual_arrival
+from passengers
+join booking on passengers.passenger_id = booking.passenger_id
+join booking_flight on booking.booking_id = booking_flight.booking_id
+join flights on booking_flight.flight_id = flights.flight_id
+order by actual_arrival desc ;
+
+select flights.flight_id,flight_no,airline_country as airline_home_country,airport.country as origin_country from airport
+join flights on airport.airport_id = flights.arrival_airport_id
+join airline on flights.airline_id = airline.airline_id
+where airline_country = airport.country;
