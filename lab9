@@ -1,0 +1,109 @@
+
+-- 1111111111
+BEGIN;
+DELETE FROM booking
+WHERE booking_id = 123; -- Replace with the actual booking_id
+-- Simulate an error (invalid booking_id or intentional rollback)
+ROLLBACK; -- Uncomment to test rollback, or force error by providing invalid `booking_id`.
+-- Check the result
+COMMIT;
+
+
+-- 2222222222222222
+BEGIN;
+UPDATE flights
+SET scheduled_departure = '2024-12-01 10:00:00' -- New departure time
+WHERE flight_id = 456; -- Replace with the actual flight_id
+-- Simulate an error (invalid flight_id or intentional rollback)
+ROLLBACK; -- Uncomment to test rollback, or force error by providing invalid `flight_id`.
+-- Check the result
+COMMIT;
+
+---- 33333333333333333333333
+BEGIN;
+UPDATE booking
+SET price = price - 50.00 -- Decrease by $50
+WHERE booking_id IN (
+    SELECT booking_id FROM booking_flight WHERE flight_id = 789
+); -- Replace with the actual flight_id
+-- Simulate an error to rollback
+ROLLBACK; -- Uncomment to test rollback.
+-- Check the result
+COMMIT;
+
+-------- 444444444444444444444444
+BEGIN;
+UPDATE passengers
+SET first_name = 'John', last_name = 'Doe'
+WHERE passenger_id = 101; -- Replace with actual passenger_id
+-- Check associated bookings
+UPDATE booking
+SET passenger_id = 101
+WHERE passenger_id = 101;
+-- Commit or rollback
+COMMIT;
+
+------------ 555555555555555555555555
+rollback ;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM booking WHERE booking_id = 301) THEN
+        RAISE NOTICE 'booking_id already exists!';
+    ELSE
+        INSERT INTO booking (booking_id, passenger_id, price, status)
+        VALUES (301, 201, 150.00, 'Confirmed');
+    END IF;
+END $$;
+
+------------ 666666666666666666666
+BEGIN;
+UPDATE booking
+SET price = price + 30.00 -- Increase by $30
+WHERE booking_id IN (
+    SELECT booking_id FROM booking_flight WHERE flight_id = 654
+); -- Replace with actual flight_id
+-- Commit or rollback
+COMMIT;
+
+
+------------ 7777777777777777777777777777777777
+BEGIN;
+UPDATE baggage
+SET weight_in_kg = 25.50 -- New weight
+WHERE baggage_id = 1001; -- Replace with actual baggage_id
+-- Commit or rollback
+COMMIT;
+
+
+---------------------- 88888888888888888888888888888
+
+BEGIN;
+UPDATE booking
+SET price = price * 0.9 -- Apply a 10% discount
+WHERE passenger_id = 101 AND booking_id = 123; -- Replace with actual passenger_id and booking_id
+-- Commit or rollback
+COMMIT;
+
+
+--------------------------- 99999999999999999999999999999999999999999
+
+BEGIN;
+UPDATE booking_flight
+SET flight_id = 987 -- New flight_id
+WHERE flight_id = 123; -- Old flight_id
+-- Commit or rollback
+COMMIT;
+
+
+BEGIN;
+UPDATE booking
+SET price = price * 1.10
+WHERE booking_id IN (
+    SELECT bf.booking_id
+    FROM booking_flight bf
+    JOIN flights f ON bf.flight_id = f.flight_id
+    WHERE f.flight_id = 123
+);
+ROLLBACK;
+COMMIT;
+
